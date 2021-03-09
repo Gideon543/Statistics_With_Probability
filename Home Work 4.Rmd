@@ -1,0 +1,255 @@
+---
+title: "Home Work 4"
+author: "Gideon Donkor Bonsu"
+date: "11/10/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+### QUESTION 1
+
+```{r}
+
+# Creating a histogram of toughness values
+toughness_values <- c(0.42, 0.58, 0.67, 0.70, 0.77, 0.79, 0.81, 0.82, 0.84, 0.86, 0.91, 0.95, 0.98, 1.01, 1.04)
+
+ hist(toughness_values,
+     main = "The Fracture Toughness in Concrete \n Specimens",
+     xlab = "Toughness (likelihood of construction failure)",
+     col = "#0F7F7F")
+
+# Calculating the appropriate measure of center and variation
+meanValue <- mean(toughness_values);meanValue
+
+median(toughness_values)  # to determine if the distribution is symmetric
+s_deviation <- sd(toughness_values); s_deviation  # standard deviation
+
+# Finding outliers in the distribution
+values_below_2_deviations <- toughness_values < (meanValue - 2*s_deviation)
+toughness_values[values_below_2_deviations]
+
+values_above_2_deviations <- toughness_values > (meanValue + 2*s_deviation)
+toughness_values[values_above_2_deviations] # "numeric(0)" means there is none.
+
+```
+
+As the difference between the mean (0.81) and median (0.82) is a  negligible value of 0.01, it follows that the distribution is fairly symmetrical. It can also be seen that typically, the toughness value of the concrete blocks is 0.81 and each block's toughness deviates from this value only by 0.17 (standard deviation). Also, of all the concrete blocks in the distribution, there was one with an extremely low toughness value of 0.42.  
+
+
+
+
+### QUESTION 2
+
+``` {r}
+
+# Binomial of the form:
+n <- 12
+p <- 0.45
+
+# Probability that out of the 12 women, fewer than 2 women recognize the cosmetics brand (i.e P(X < 2))
+P_of_X_lessThan2 <- pbinom(1,n,p) * 100; P_of_X_lessThan2
+
+# Probability that out of the 12 women, 7 or more women recognize the cosmetics brand (i.e P(X >= 7))
+P_of_X_7orMore <- pbinom(7,n, p,lower.tail = FALSE) * 100; P_of_X_7orMore
+
+# Probability that out of the focus group, 8 women recognized the cosmetic brand (i.e P(X = 8))
+P_of_X_equals8 <- dbinom(8,n, p) * 100; P_of_X_equals8
+
+# Probability that out of the focus group, 11 women recognized the cosmetic brand (i.e P(X = 11))
+P_of_X_equals11 <- dbinom(11,n, p) * 100; P_of_X_equals11
+
+
+# Creating a spike plot to illustrate the probability distribution for the outcomes (X < 2) and (X >= 7).
+outcomes <- c(0,1,7,8,9,10,11,12)
+probabilities <- dbinom(outcomes,12, 0.45)
+plot(outcomes,probabilities, 
+     type = "h",
+     main = "Probability Distribution For Fewer \n Than 2 and 7 or More Women",
+     xlab = "Number Of Women",
+     ylab = "Probabilities")
+points(outcomes, probabilities, pch = 16, col = "red")
+
+
+```
+
+a) There is approximately 0.83% chance that less than 2 women out of the 12 will recognize the cosmetics brand. In other words, less than 2 women can identify the brand 0.83% of time. Hence, that occurrence is very unusual. However, 11.17% of the time, 7 or more women can discern the brand.Although this means that such outcome is quite unusual, it has a higher chance of occurring than having fewer than 2 women identify the cosmetics brand.
+
+b) Given that 8 women recognizing the brand was a least expected outcome (probability of its occurrence was 7.62%), the campaign's ability to generate 8 women out of the 12 means it was effective. On the other hand, with a probability of 0.10%, it is very unlikely that 11 women out 12 can identify the brand. In fact, one can assume that such a result is very unexpected. Therefore, 11 women recognizes the cosmetics brand after the campaign, then the campaign was very effective. Put differently, it performed beyond expectation.
+
+c) Below are some reasons why the number of participants in a focus group of 12 who recognize a particular brand fits the criteria of a binomial experiment:
+
+i) There was a fixed number of trials. That is, if we think about each randomly selected woman as a trial, there were 12 trials in all as the sample consisted 12 women.
+
+ii) Each trial had the same chance of success. In other words,there was 0.45 chance that each woman selected will recognize the brand.For example, the first randomly chosen woman had a 0.45 probability of identifying the brand. So was the second woman,the third etc.
+
+iii) The sample space for each trial was two. That is, it was either the selected woman could recognize the brand (probability of 0.45) or not(probability of 0.55).
+
+iv) Each trial was independent. This is because, the outcome of one trial did not affect that of the other. For instance, if the first selected woman could identify the brand, it had no effect on the results of the second selected woman. 
+
+
+
+
+
+### QUESTION 3
+
+```{r}
+# Returns on funds X and Y and the probabilities of their occurrences
+returnsOfFundX <- c(-100, 100, 250)
+returnsOfFundY <- c(200, 50, -100)
+P_ofXY <- c(0.2, 0.5, 0.3)
+
+# Expected values of Fund X and Fund Y
+expected_valueOf_X <- sum(returnsOfFundX * P_ofXY);expected_valueOf_X
+expected_valueOf_Y <- sum(returnsOfFundY * P_ofXY);expected_valueOf_Y
+
+# Variations from the expected values of Fund X and Fund Y
+variance_X <- sum(((returnsOfFundX - expected_valueOf_X)^2) * P_ofXY)
+variance_Y <- sum(((returnsOfFundY - expected_valueOf_Y)^2) * P_ofXY)
+sd_X <- sqrt(variance_X); sd_X
+sd_Y <- sqrt(variance_Y); sd_Y
+
+
+
+# Expected value and variation for a combined investment in Fund X and Fund Y.
+combined_expectedValue <- expected_valueOf_X + expected_valueOf_Y
+combined_expectedValue
+
+# Covariance
+covariance <- sum(((returnsOfFundX - expected_valueOf_X) * (returnsOfFundY - expected_valueOf_Y) * P_ofXY));covariance
+
+# Standard deviation of the combined investment
+sd_XandY <- sqrt(variance_X + variance_Y + 2*covariance);sd_XandY
+
+ 
+
+```
+From the calculations, fund X (with expected value of 105 dollars) will typically be more profitable and rewarding than fund Y(with expected value of 35 dollars). However, the variations from the expected values of fund X and fund Y are 121.35 dollars and 105 dollars respectively. This suggests that the returns of fund X, though profitable, is riskier than that of fund Y.
+
+i) Ordinarily, it is not advisable for an old retiring couple to take huge financial risks. After all, they will not have a steady flow of income as they used. Hence, riskier investments can plunge them deep in poverty. I would advise such couple to invest in Fund Y. It may not be the most profitable but it is far less riskier than Fund X.
+
+ii) In contrast, recently married couples beginning their careers can easily make up for losses on risky investments. For one thing, they have a steady flow of income and relatively lower expenses since they have no children yet. Therefore. as opposed to the previous couple, I would advise that they invest in fund X. The returns are greater and though it is riskier, the couple have ample time to make up for their loss.
+
+d) The expected return on the sum of the two investments is 140 dollars with an associated deviation of 20 dollars. Clearly, a combined investment in the two funds is expected to return an amount of 140 dollars which is greater than the 105 dollars and 35 dollars an investor would have received from investing in the funds individually. Again, the risk is lower in this type of investment given that the standard deviation is only 20 dollars. Anyone who plans to either invest in fund A or B, can reduce the individual risks associated risk with A and B by roughly 84% (20-121.35/121.35 * 100) and 81%(20-105/105 * 100) respectively if he chooses to invest in both.
+
+
+### QUESTION 4
+```{r}
+# Create a range of the total admission letters that can keep the probability of students' accepting an offer at 0.05.
+possible_nValues <- c(341:500) 
+
+# Finding the number of admissions letters that will keep the probability of student's accepting an offer at 0.05
+appropriate_nValue <- possible_nValues[round(1-pbinom(340,possible_nValues, 0.67),2)== 0.05];appropriate_nValue
+
+```
+If the university would like to keep the probability of more than 340 students accepting admissions offers to 0.05, it should send out 483 admissions letters. 
+
+
+
+### QUESTION 5
+```{r}
+# Defining a function to return Z Scores
+z_score <- function(X,meanValue, sdeviation){
+  score <- (X - meanValue)/sdeviation
+  return(score)
+}
+
+# Creating a function to convert Z Scores to corresponding heights
+zScore_toHeight <- function(zScore, meanValue, sdeviation){
+  height <- (sdeviation * zScore) + meanValue
+  return(height)
+}
+
+#For the Guizhou region
+
+# Height corresponding to a Z-score of +1 for an urban male in Guizhou
+u_height <- zScore_toHeight(1, 167.51, 5.84); u_height
+
+# Height corresponding to a Z-score of +1 for a rural male in Guizhou
+r_height <- zScore_toHeight(1, 165.57, 5.85); r_height
+
+# Z-score of an urban male from Guizhou whose height is 163 cm
+zscore163 <- z_score(163, 167.51, 5.84); zscore163
+
+
+
+# For the Beijing region
+
+# Height corresponding to a Z-score of +1 for an urban male in Beijing
+u_height1 <- zScore_toHeight(1, 174.97, 6.76); u_height1
+
+# Height corresponding to a Z-score of +1 for a rural male in Beijing
+r_height1 <- zScore_toHeight(1, 173.90, 5.24); r_height1
+
+# Z-score of an urban male from Beijing whose height is 163 cm
+zscore1631 <- z_score(163, 174.97, 6.76); zscore1631
+
+
+
+# Deciles of the height of urban females in Beijing
+upper_decile <- zScore_toHeight(1.29, 162.23, 5.41); upper_decile
+lower_decile <- zScore_toHeight(-1.29, 162.23, 5.41); lower_decile
+
+# Deciles of the height of urban males in Beijing
+upper_decile1 <- zScore_toHeight(1.29, 174.97, 6.76); upper_decile1
+lower_decile1 <- zScore_toHeight(-1.29, 174.97, 6.76); lower_decile1
+
+
+
+# Xiu's Z Score
+xiu <- z_score(189.2, 174.97, 6.76); xiu
+
+
+
+# Finding a suitable lower and upper height values to use for the design
+meanOfMales <- 171.89
+meanOfFemales <- 159.78
+sdMales <- 6.39 
+sdFemales <- 5.60
+
+upperlimitForMales <- zScore_toHeight(2,meanOfMales,sdMales); upperlimitForMales
+
+upperlimitForFemales <- zScore_toHeight(2,meanOfFemales,sdFemales); upperlimitForFemales
+
+lowerlimitForMales <- zScore_toHeight(-2,meanOfMales,sdMales); lowerlimitForMales
+
+lowerlimitForFemales <- zScore_toHeight(-2,meanOfFemales,sdFemales); lowerlimitForFemales
+
+
+
+
+
+```
+a) For the region of Guizhou,the height that corresponds to a Z-score of +1 for an urban male is 173.35 cm.
+  For a rural male, the height is 171.42 cm.
+  The Z-score of an urban male from Guizhou whose height is 163 cm is a score of -0.77.
+  
+b) For the region of Beijing,the height that corresponds to a Z-score of +1 for an urban male is 181.73 cm.
+  For a rural male, the height is 179.14 cm.
+  The Z-score of an urban male from Guizhou whose height is 163 cm is a score of -1.77.
+  
+c) The lower standard deviations might have stemmed from the fact that the heights of residents, males and females, of Hainan are very close. In other words,if there is less variation in the heights of all people living in Hainan,then the standard deviation will be lower. 
+
+
+d) While the top 10% of the heights of urban women in Beijing above the height of 169.21 cm, that of the heights of men is above 183.69 cm. On the other hand, the lower 10% heights of women is below 155.25 cm while the lower 10% of heights in men is below 166.25 cm.
+
+e) Xiu's Z Score is 2.11, which means he is within the top 2.5% tallest urban men in Beijing. In other words, his height is greater 95% of the heights of males in Beijing. Given that, any value that falls beyond 95% of values in a distribution is considered an outlier, Xiu's height is unusual.
+
+
+f) It is important to first find the mean and standard deviation of the total heights of both female and male urban residents in China. From the table, the mean and standard deviation for all female heights are 159.78 cm and 5.60 cm respectively. For males, the mean and standard deviation are 171.89 cm and 6.39 cm.
+  Once that is done, we can find the intervals within which 95% of the heights fall within for each of the categories(males and females). We can easily find this using the Z scores, -2 and +2 because from the empirical rule, 95% of a distribution is within 2 standard deviations above and below the mean value of the distribution. We can as well work them out manually.
+  The results from calculations reveal that for urban females, 95% of heights are within 148.58 cm and 170.98 cm. For urban males, that percentage falls within 159.11 cm and 184.67 cm.
+  It is only reasonable that in designing the cars, the lowest height to be considered is 148.58 cm while the highest value of height should be 184.67 cm.
+
+
+
+
+
+
+
+
+

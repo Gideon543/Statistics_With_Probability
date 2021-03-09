@@ -1,0 +1,426 @@
+---
+title: "Project Assignment 3 & 4"
+author: "Gideon Donkor Bonsu"
+date: "23/10/2020"
+output:
+  word_document: default
+  html_document: default
+---
+
+
+**Research Question: Is there an association between social class, age of Ghanaians, perceived security of personal data and the use of virtual platforms to do transactions?**
+
+Explanatory variables: Social class(Categorical), age bracket(Categorical) and Perceived Security (categorical).
+
+Response variable: Use of online platforms for transactions (categorical).
+
+## 1. Load dataset(s) and libraries
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#load the dataset
+ load("C:/Users/Gideon Bonsu/Desktop/Statistics With Prob/Assignments/glsshouseholdSec1_Sec5merged.RData")
+
+ load("C:/Users/Gideon Bonsu/Desktop/Statistics With Prob/Assignments/glsshouseholdSec13.RData")
+
+#descr package needed for freq() function
+library(descr)
+#stats library needed for ftable() function with formula input
+library(stats)
+```
+
+
+
+## 2. Create variable subset
+```{r}
+# Age, Job Status, Highest Education, location, Online Transactions
+vars <- c('s1q5y', 's4aq36', 's2aq3','loc2','s5cq10')
+glss <- glsshouseholdSec1_Sec5merged[vars]
+```
+
+
+
+## 3. Data management I: check for and remove error codes
+**Perceived Security Regarding How Organizations Handle Personal Data**
+```{r}
+# Observing the distribution of perceived security regarding how organizations handle personal data
+freq(glsshouseholdSec13$s13h7h)
+```
+**Perceived Security Regarding How Organizations Handle Personal Data (Revised)**
+```{r}
+# Error code = 3 and 9
+glsshouseholdSec13$s13h7h[glsshouseholdSec13$s13h7h == 9] <- NA
+freq(glsshouseholdSec13$s13h7h)
+```
+
+**Age**
+```{r}
+# Observing the distribution of ages of household members
+hist(glss$s1q5y, main="Age", xlab = "Age(in years)")
+# No error codes found
+
+```
+
+**Job Status**
+```{r}
+# Observing the distribution of job status of household members
+freq(glss$s4aq36)
+# No error codes found
+
+```
+**Level of Education**
+```{r}
+# Observing the distribution of households' level Of Education
+freq(glss$s2aq3)
+# No error codes found
+
+```
+**Use of online platforms**
+```{r}
+# Observing the distribution of households' familiarity with Online transactions
+freq(glss$s5cq10)
+# No error codes found
+
+```
+
+
+## 4. Data management II: further subset, create secondary variable, etc.
+```{r}
+#creating a variable for social class, which are people who either have a higher education and paid employment or have lower education and casual employment. 1 = lower class(education below high school level and casual worker), 2 = middle class(education above high school level and paid worker)
+
+glss $ socialClass <- rep(NA,nrow(glss))
+glss $ socialClass[glss $ s4aq36  == 2 | glss $ s4aq36 == 11 | glss$s2aq3 < 4] <- 1
+glss $ socialClass[glss $s4aq36 == 1 | glss $ s2aq3 > 3] <- 2
+
+
+# Creating a variable for age, which consists younger and older households. 1= households with ages between 18 and 45, 2 = households with ages greater than 45
+
+glss $ ageBrackets <- rep(NA,nrow(glss))
+glss $ ageBrackets[glss $ s1q5y > 17 & glss $ s1q5y < 46] <- 1
+glss $ ageBrackets[glss $ s1q5y > 45] <- 2
+
+# Creating a variable for perceived security on how organizations protect private data. 1 = Agree that security is effective and 2 = Disagree that security is effective.
+
+glss$perceivedSec <- rep(NA,nrow(glss))
+glss$perceivedSec[glsshouseholdSec13$s13h7h == 1 | glsshouseholdSec13$s13h7h == 2|                          glsshouseholdSec13$s13h7h == 3] <- 1
+glss$perceivedSec[glsshouseholdSec13$s13h7h == 4 | glsshouseholdSec13$s13h7h == 5] <- 2
+```
+
+
+## 5. Generate descriptive statistics (sample means, standard deviations, sample proportions)
+**Proportions of Young And Old Ghanaian Households Members.**
+```{r}
+# Proportions of young and old Ghanaian households members.
+freq(glss$ageBrackets,
+     y.axis = "percent", 
+     main = "Age Distribution of Ghanaian Households", 
+     ylab = "Percent",
+     col = "blue",
+     ylim = c(0,100),
+     names = c("Younger \nHouseholds", "Older\n Households"))
+
+```
+**Proportions of Lower And Middle Class Ghanaians**
+```{r}
+# Proportions of lower and middle class Ghanaians
+freq(glss$socialClass,
+     y.axis = "percent",
+     col = "#BB29BB",
+     main = "Social Class of Ghanaian Households",
+     names = c("Lower\nClass", "Middle\nClass"),
+     ylim = c(0,100),
+     ylab = "Percent")
+
+```
+**Proportion of Ghanaians Who Believe Their Personal Data Are Secured With Organizations**
+```{r}
+# Proportion of Ghanaians Who Believe Their Personal Data Are Secured With Organizations
+freq(glss$perceivedSec,
+     y.axis = "percent",
+     col = "#0072A0",
+     main = "Perceived Security Regarding How \nOrganizations Handle Personal Data",
+     names = c("Agree", "Disagree"),
+     ylim = c(0,100),
+     ylab = "Percent")
+
+
+```
+
+
+
+**Proportion of Households Who Use Online Platforms For Trade**
+```{r}
+# Use of Online platforms for trade
+freq(glss $ s5cq10,
+     names = c("Yes", "No"),
+     col = "663399",
+     y.axis = "percent",
+     ylim = c(0,100),
+     main = "Use of Online Shopping \nPlatforms Among Ghanaians", 
+     ylab = "Percent")
+
+```
+
+
+
+## 6. Bivariate tables and graphs
+
+**The Proportion of Young And Old Households Who Use Online Platforms For Transactions**
+```{r}
+# Generate a table of proportions for usage of online platforms (response var = rows) among younger and older households (explanatory var = columns)
+t1 <- table(glss$s5cq10, glss$ageBrackets); t1
+
+# convert to a table of proportions, 2 specifies column proportions
+t1_prop <- prop.table(t1,2); t1_prop
+
+# Generate a barplot of the proportion of young and old households who use online platforms for transactions
+barplot(t1_prop[1, ], main = "Proportion of Younger Household Members \nWho Use Online Shopping Platforms", names = c("Younger\nHouseholds", "Older\nHouseholds"), ylab = "Proportion of Online Platform Users", ylim=c(0,0.03), col = "#3c1361")
+```
+
+**Moderation**
+```{r}
+# Moderation
+t2 <- ftable(glss$ageBrackets ~ glss$s5cq10 + glss$loc2);t2
+t2_prop  <- prop.table(t2,2)
+t2_prop
+
+barplot(t2_prop[1:2, ],main = "Proportion of Younger Household Members \nWho Use Online Shopping Platforms", beside = TRUE, names = c("Younger\nHouseholds", "Older\nHouseholds"), ylab = "Proportion of online Platform Users", ylim = c(0,0.012), col = c("#0F7F7F","light blue"))
+legend("topright", c("Urban","Rural"), fill = c("#0F7F7F","light blue"))
+
+```
+
+**The Proportion of Lower Class And Middle Class Households Who Use Online Platforms For Transactions**
+```{r}
+# Generate a table of proportions for usage of online platforms (response var = rows) among lower and middle class households (explanatory var = columns)
+t1 <- table(glss$s5cq10, glss$socialClass); t1
+
+# convert to a table of proportions, 2 specifies column proportions
+t1_prop <- prop.table(t1,2); t1_prop
+
+# Generate a barplot of the proportion of young and old households who use online platforms for transactions
+barplot(t1_prop[1, ], main = "Proportion of Middle Class Ghanaians \nWho Use Online Shopping  Platforms", names = c("Lower\n Class", "Middle\n Class"), ylab = "Proportion of Online Platform Users", ylim=c(0,.05),col="#bca0dc")
+
+```
+**Moderation**
+```{r}
+# Moderation
+t2 <- ftable(glss$socialClass ~ glss$s5cq10 + glss$loc2)
+
+t2_prop  <- prop.table(t2,2)
+
+t2_prop
+
+
+barplot(t2_prop[1:2, ],main = "Proportion of Middle Class Ghanaians \nWho Use Online Shopping  Platforms", beside = TRUE, names = c("Lower\nClass", "Middle\nClass"), ylab = "Proportion of Online Platform Users", ylim = c(0,.038) , col = c("#0F7F7F","light blue"))
+legend("topleft", c("Urban","Rural"), fill = c("#0F7F7F","light blue"))
+
+```
+
+**Proportion of Ghanaians Who Agree To Data Security In Organizations and Use Online Shopping Platforms**
+```{r}
+# Generate a table of proportions for usage of online platforms (response var = rows) and individuals who agree/ disagree to data security in organizations(explanatory var = columns)
+t1 <- table(glss$s5cq10, glss$perceivedSec); t1
+
+# convert to a table of proportions, 2 specifies column proportions
+t1_prop <- prop.table(t1,2); t1_prop
+
+
+# Generate a barplot of the proportion of individuals who agree/ disagree to data security in organizations and use online platforms for transactions
+barplot(t1_prop[1, ], main = "Ghanaians Who Agree To Data Security In\n Organizations and Use Online Shopping Platforms", names = c("Agree", "Disagree"), ylab = "Proportion of Online Platform Users", ylim=c(0,0.02), col = "#3c1361")
+```
+
+**Moderation**
+```{r}
+# Moderation
+t2 <- ftable(glss$perceivedSec ~  glss$s5cq10 + glss$loc2);t2
+t2_prop  <- prop.table(t2,2)
+t2_prop
+
+barplot(t2_prop[1:2,],main = "Ghanaians Who Agree To Data Security In\n Organizations and Use Online Shopping Platforms", beside = TRUE, names = c("Agree", "Disagree"), ylab = "Proportion of Online Platform Users", ylim = c(0,.012) , col = c("#0F7F7F","light blue"))
+legend("topleft", c("Urban","Rural"), fill = c("#0F7F7F","light blue"))
+
+```
+
+This study was done to assess the relationships between social class of Ghanaians, age, perceived security of personal data and use of online platforms for shopping. 
+Now, the assessment has revealed that there is a possible association between the social class of Ghanaians and whether or not they use online platforms for trade. This was evident in the fact that about 82% of middle class Ghanaians used online platforms as compared to roughly 46% lower class Ghanaians. Among that 82% of middle class Ghanaians, the assessment further revealed that those who lived in urban areas were more likely to use online platforms than those who lived in rural communities.
+
+Again, a likely association can be drawn between the ages of Ghanaians and the use of online commerce platforms. From the distribution, younger/youthful Ghanaians(i.e. Ghanaians between the ages of 18 and 45) tend to often trade online than older Ghanaians (i.e Ghanaians above the age of 45). In other words, the percentage of young Ghanaians who use virtual platforms for commerce stood at 83% while that of the old was roughly 74%. As was in the case of middle class Ghanaians, young Ghanaians in urban areas were more prone to trade online than those in rural areas.
+
+Finally, there was no association between perceived data security and whether or not a Ghanaian would trade virtually. This is because the proportion of Ghanaians who believed that their personal data were well secured by private organizations used online platforms as often as those who didn't agree. That's, the proportion of online platform users stood at about 74% in both categories.
+
+
+
+## 7. Chi-Square Test of Independence
+
+**Chi-Square Test of Independence for Association Between Age and Use of Online Platforms**
+```{r}
+#  Collecting and summarizing sample data
+
+# Generate a table of proportions for usage of online platforms (response var = rows) among younger and older households (explanatory var = columns)
+t1 <- table(glss$s5cq10, glss$ageBrackets)
+rownames(t1)<- c("Use Online Platforms", "Do Not Use Online Platforms")
+colnames(t1)<- c("Younger Households", "Older Households")
+t1
+
+# convert to a table of proportions, 2 specifies column proportions
+t1_prop <- prop.table(t1,2); t1_prop
+rownames(t1_prop)<- c("Use Online Platforms", "Do Not Use Online Platforms")
+colnames(t1_prop)<- c("Younger Households", "Older Households")
+
+
+# Assessing the evidence
+chisq_results <- chisq.test(glss$s5cq10, glss$ageBrackets); chisq_results
+chisq_results$observed
+chisq_results$expected
+chisq_results$residuals
+
+
+
+
+```
+**Step 1: Stating the claim**
+
+Ho: There is no relationship between the age of households and the use of online platforms for transactions. They are independent.
+
+Ha: There is a relationship between the age of households and the use of online platforms for transactions. They are not independent.
+
+**Step 2: Collecting and Summarizing the data**
+
+  The proportion and counts of younger and older households who either use or do not use online platforms are summarized in the table above. However, to proceed with the test we have to check if the appropriate criteria are met.
+1. The sample is indeed random.
+2. The expected counts are all greater than 5. Therefore, we can carry out the chi-test.
+
+**Step 3: Assess the evidence**
+
+Chi-Square = 53.283.
+P-Value is approximately 0.
+
+**Step 4: Make a conclusion**
+
+ Since the is extremely small (p-Value < 0.05), the data is statistically significant. In other words, the data provides enough evidence to reject the claim that there is no relationship between the age of households and the use of online platforms. Therefore, we can conclude that indeed age is related to the use of online platforms.
+ A type 1 error could have been made. That is, there is a 5% chance that there could be no relationship between age of households and the use of online platforms.
+
+
+**Chi-Square Test of Independence for Association Between Social Class and Use of Online Platforms**
+```{r}
+#  Collecting and summarizing sample data
+
+# Generate a table of proportions for usage of online platforms (response var = rows) among lower and middle class households (explanatory var = columns)
+t1 <- table(glss$s5cq10, glss$socialClass)
+rownames(t1)<- c("Use Online Platforms", "Do Not Use Online Platforms")
+colnames(t1)<- c("Lower Class", "Middle Class")
+t1
+
+# convert to a table of proportions, 2 specifies column proportions
+t1_prop <- prop.table(t1,2); t1_prop
+rownames(t1)<- c("Use Online Platforms", "Do Not Use Online Platforms")
+colnames(t1)<- c("Lower Class", "Middle Class")
+
+# Assessing the evidence
+chisq_results <- chisq.test(glss$s5cq10, glss$socialClass); chisq_results
+chisq_results$observed
+chisq_results$expected
+chisq_results$residuals
+
+```
+**Step 1: Stating the claim**
+
+  Ho: There is no relationship between the social class of households and the use of online platforms for transactions. They are independent.
+
+Ha: There is a relationship between the social class of households and the use of online platforms for transactions. They are not independent.
+
+**Step 2: Collecting and Summarizing the data**
+
+  The proportion and counts of lower class and middle class households who either use or do not use online platforms are summarized in the table above. However, to proceed with the test we have to check if the appropriate criteria are met.
+1. The sample is indeed random.
+2. The expected counts are all greater than 5. Therefore, we can carry out the chi-test.
+
+**Step 3: Assess the evidence**
+
+Chi-Square = 310.33
+P-Value is approximately 0.
+
+**Step 4: Make a conclusion**
+
+ Since the is extremely small (p-Value < 0.05), the data is statistically significant. In other words, the data provides enough evidence to reject the claim that there is no relationship between social class of households and the use of online platforms. Therefore, we can conclude that indeed social class is related to the use of online platforms for trade.
+A type 1 error could have been made. That is, there is a 5% chance that there could be no relationship between social class of households and the use of online platforms.
+
+**Chi-Square Test of Independence for Association Between Perceived Data Security and Use of Online Platforms**
+```{r}
+#  Collecting and summarizing sample data
+
+# Generate a table of proportions for usage of online platforms (response var = rows) among individuals who agree/ disagree to data security in organizations (explanatory var = columns)
+t1 <- table(glss$s5cq10, glss$perceivedSec)
+rownames(t1)<- c("Use Online Platforms", "Do Not Use Online Platforms")
+colnames(t1)<- c("Agree", "Disagree")
+t1
+
+# convert to a table of proportions, 2 specifies column proportions
+t1_prop <- prop.table(t1,2); t1_prop
+rownames(t1)<- c("Use Online Platforms", "Do Not Use Online Platforms")
+colnames(t1)<- c("Lower Class Households", "Middle Class Households")
+
+# Assessing the evidence
+chisq_results <- chisq.test(glss$s5cq10, glss$perceivedSec); chisq_results
+chisq_results$observed
+chisq_results$expected
+chisq_results$residuals
+
+```
+**Step 1: Stating the claim**
+  
+  Ho: There is no relationship between perceived data security and the use of online platforms for transactions. They are independent.
+
+Ha: There is a relationship between perceived data security and the use of online platforms for transactions. They are not independent.
+
+**Step 2: Collecting and Summarizing the data**
+  
+  The proportion and counts of individuals who agree/disagree with data security in organizations and either use or do not use online platforms are summarized in the table above. However, to proceed with the test we have to check if the appropriate criteria are met.
+1. The sample is indeed random.
+2. The expected counts are all greater than 5. Therefore, we can carry out the chi-test.
+
+**Step 3: Assess the evidence**
+
+Chi-Square = 0.21164
+P-Value is approximately 0.6455.
+
+**Step 4: Make a conclusion**
+ 
+ Since the is very large (p-Value > 0.05), the data is not statistically significant. In other words, the data does not provide enough evidence to reject the claim that there is no relationship between perceived data security of households and the use of online platforms. Therefore, we cannot conclude that indeed perceived is related to the use of online platforms for trade.
+ A type 2 error could have been made. That is, there is a 5% chance that there could be a relationship between social perceived data security among individuals and the use of online platforms.
+
+
+### SUMMARY
+  The study was conducted to explore possible associations between age, social class, perceived security and the use of online platforms for trade. After conducting hypothesis tests and analyzing various sample data, enough evidence were gathered to support a likely relationship between age, social class and online transactions.
+  
+  We found that while about 2% of younger households used virtual platforms for trade, approximately 1% older households did (a slight difference of roughly 1%). Further analysis revealed that of the 2% younger households who traded online, about half(1.1%) resided in urban areas while the other half(1.0%) lived in rural communities. Ironically, we saw that approximately 0.3% of older households who traded online lived in urban areas compared to 0.6% who resided in rural areas.
+  
+  Again, as mentioned, the data revealed an association between social class and the use of online platforms. We found that about 1% lower class Ghanaians do transactions online as opposed to 5% middle class Ghanaians (a fairly large difference of approximately 4%). Moderating these findings with location, we learned that about 3.3% of middle class Ghanaians who traded online lived in urban areas with about 1.4% residing in rural communities. Again, we discovered that while about 0.4% of lower class rural households transact virtually, roughly 0.7% lower class Ghanaians who trade online live in urban areas.
+  
+  Lastly, perceived data security among individuals was found to have no relationship with whether or not households traded online. Apparently, there wasn't a significant difference between the proportions of individuals who either agreed or disagreed to data security in organizations(1.6% and 1.5 % respectively) yet traded online.
+  
+  It should be pointed out that there were indeed possible limitations to this research especially with regard to how the social class of households was measured. Only two variables where considered in categorizing individuals into the two classes, job status and education level. This may not necessarily be a widely accepted measure of class and as such, may have affected the results of this research. Nevertheless, this research may perhaps be appropriate for analyzing the virtual trade space in Ghana in terms of how households are familiar with trading online. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

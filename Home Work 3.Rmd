@@ -1,0 +1,267 @@
+---
+title: "Home Work"
+author: "Gideon Donkor Bonsu"
+date: "26/09/2020"
+output: word_document
+---
+```{r setup, message = TRUE}
+load("auto_premiums.RDATA")
+```
+
+
+
+### QUESTION 1
+
+```{r}
+
+trial <- matrix(c(57,117,174,30,132,162,87,249,336), ncol=3, byrow=TRUE)
+
+# Define column names
+colnames(trial) <- c("Cart","No Cart","Total")
+
+# Define row names
+rownames(trial) <- c("New Page","Old Page","Total")
+
+twoWayTable <- as.table(trial); twoWayTable   #Display a two way table
+
+# Probability that a customer will put an item in their cart.
+P_of_S = 87/336; P_of_S
+
+# Probability a customer will put an item into their shopping cart given that they were sent to the new splash page.
+P_of_S_given_N = 57/174; P_of_S_given_N
+
+# Probability a customer will put an item into their shopping cart given that they were sent to the old splash page.
+P_of_S_given_O = 30/162; P_of_S_given_O
+
+# Probability that a customer went to the old splash page and did not put an item into their cart.
+P_of_O_and_notCart = 132/336; P_of_O_and_notCart
+
+# Proof that “new splash page” and “puts item into shopping cart” are dependent events.
+P_of_S_given_New = 57/174; P_of_S_given_New
+P_of_S_given_notNew = 30/162; P_of_S_given_notNew
+
+```
+a) The probability that a customer will put an item in a cart is 0.2589.
+
+b) The probability that a customer will put an item into a shopping cart given that they were sent to the new splash page is 0.3276.
+
+c) The probability that a customer will put an item into a shopping cart given that they were sent to the old splash page is 0.1852.
+
+d) The probability that a customer went to the old splash page and did not put an item into a cart is 0.3929.
+
+e) For the two events, a customer is sent to a "new splash page" and that he/she "puts item into shopping cart" to be independent, the probability that a chosen customer would put an item in a shopping cart given that he/she is sent to the "new splash page"(i.e P(S|N)) should be equal to the probability that the customer "puts an item in a shopping cart" if he/she is not sent to the new splash page(i.e P(S|not N)). 
+  Since P(S|N), 0.3276, is not equal to P(S|not N), 0.1852, it follows that the two events are not independent.In other words, they are dependent.
+  
+
+
+
+
+### QUESTION 2
+
+a) Many outcomes may arise from having the five tickets. Some outcomes may include all tickets failing to win a prize, only one out of the five tickets winning something etc. However, an important set of outcomes are those in which the 5 tickets can win at least a prize draw in the raffle. This means it is very much possible that in one outcome, the first ticket can win the first prize and one ticket out of the remaining four can win the second prize draw as well. As both of these events can likely occur in an outcome, they are joint.
+  On the other hand,when a ticket is drawn in a raffle,it is not replaced. This feature would mean that the probability of the first ticket winning a prize or not will definitely affect the probability of winning the second prize.Hence, both events are dependent.
+
+
+b) In events A, B, and C, a selected participant fell under one of the three categories of smokers (nonsmokers,moderate smokers or heavy smokers). Hence, it is not possible that in any case, a chosen participant would be in all three categories (i.e a nonsmoker, a moderate smoker and a heavy smoker) at once. In other words, the three events cannot occur at the same time, therefore, they are disjoint.
+  In addition to this, the probability that a chosen person is in one category of smokers affects the probabilities of other events happening. This is because, the sample size of the study is likely to be a measurable one(small). That said, an individual selected to be studied will definitely not be placed back in the sample, hence affecting the probabilities of other outcomes. Owing to this reason, the three events are dependent.
+
+
+c) While a respondent may plan to vote for a candidate and eventually change his/her mind, there is the likelihood that some respondents will make up their minds to vote for the candidate and will actually do so after the three months. That is, the events that a respondent can plan to vote for a candidate and actually follow through to vote for that person can occur together. Hence both events are joint. 
+  That been said, if a respondent chooses to vote for a candidate prior to the election, he/she is typically more likely to vote for that candidate. Put differently, the probability that a participant would actually vote for a presidential candidate is affected by the probability that he/she plans to vote for the individual. Hence, both events are dependent.
+
+
+
+
+### QUESTION 3
+```{r}
+numberOfDays <- 2+7+11+8+7+4+3+1; numberOfDays
+
+# Probability that no customer called in a day
+P_of_noCall <- 2/43;P_of_noCall
+
+# Probability that 5 or more customer support calls were received in one day.
+P_of_5orMore <- (3+1+4)/43; P_of_5orMore
+
+# Probability that there were less than 3 customer support calls on one day.
+P_of_lessthan3 <- (11+7+2)/43; P_of_lessthan3
+
+# Probability that there were 8 calls, given that more than 4 were received
+P_of_8calls_Given_4_more_calls <- 1/8; P_of_8calls_Given_4_more_calls
+
+```
+
+a) The study lasted 43 days.
+
+
+
+  i) The likelihood that no customer called in a day was 0.0465.
+
+  ii) The likelihood that 5 or more customer customer support calls were received was 0.1860.
+  
+  iii) The likelihood that less than 3 customer calls were received on a day was 0.4651.
+  
+  iv) The likelihood that there were 8 calls given that more than 4 were received is 0.125.
+
+
+
+### QUESTION 4
+```{r}
+# Possible arrangements for the questions
+factorial(6)
+
+```
+The questions can be arranged in 720 possible ways.
+
+
+
+
+
+
+### QUESTION 5
+```{r}
+
+# For a country with 10/100 COVID cases
+
+# P(COVID)
+P_of_Covid <- 10/100
+P_of_notCOvid <- 90/ 100   # P(no COVID)
+
+# P(Positive | COVID) 
+P_positive_givenCOvid <- 7/10
+
+# P(Negative | COVID)
+P_negative_givenCovid <- 3/10
+
+# P(Positive | no COVID)
+P_positive_givenNoCOvid <- 4/90
+
+# P(Negative | no COVID)
+P_negative_givenNoCovid <- 86/90
+
+
+# Probability that a randomly selected person has COVID-19 and the swab test returns a positive result i.e P(COVID and Positive)
+P_CovidAndPositive <- P_of_Covid * P_positive_givenCOvid; P_CovidAndPositive
+
+# Probability that a randomly selected person receives a positive result from the swab test i.e P(Positive)
+P_positive <- (P_of_Covid * P_positive_givenCOvid) + (P_of_notCOvid *                                       P_positive_givenNoCOvid); P_positive
+
+# Probability that a randomly selected person does not have COVID-19 given a positive result from the swab test i.e P(no COVID | Positive)
+P_noCOVID_givenPositve <- (P_of_notCOvid * P_positive_givenNoCOvid)/
+P_positive; P_noCOVID_givenPositve
+
+```
+ i) The probability that a randomly selected person has COVID and the swab test returns a positive result is 0.07.
+
+ii) The probability that a randomly selected person receives a positive result from the swab test is 0.11.
+
+iii) The probability that a randomly selected person does not have COVID-19 given a positive result from the swab test is 0.3636.
+
+
+```{r}
+
+# For a country with 50/100 COVID cases
+
+# P(COVID)
+P_of_Covid1 <- 50/100
+P_of_notCOvid1 <- 50/ 100   # P(no COVID)
+
+# P(Positive | COVID) 
+P_positive_givenCOvid1 <- 35/50
+
+# P(Negative | COVID)
+P_negative_givenCovid1 <- 15/50
+
+# P(Positive | no COVID)
+P_positive_givenNoCOvid1 <- 2/50
+
+# P(Negative | no COVID)
+P_negative_givenNoCovid1 <- 48/50
+
+
+# Probability that a randomly selected person has COVID-19 and the swab test returns a positive result i.e P(COVID and Positive)
+P_CovidAndPositive1 <- P_of_Covid1 * P_positive_givenCOvid1; P_CovidAndPositive1
+
+# Probability that a randomly selected person receives a positive result from the swab test i.e P(Positive)
+P_positive1 <- (P_of_Covid1 * P_positive_givenCOvid1) + (P_of_notCOvid1 *                                       P_positive_givenNoCOvid1); P_positive1
+
+# Probability that a randomly selected person does not have COVID-19 given a positive result from the swab test i.e P(no COVID | Positive)
+P_noCOVID_givenPositve1 <- (P_of_notCOvid1 * P_positive_givenNoCOvid1)/
+P_positive1; P_noCOVID_givenPositve1
+
+```
+ i) The probability that a randomly selected person has COVID and the swab test returns a positive result is 0.35.
+
+ii) The probability that a randomly selected person receives a positive result from the swab test is 0.37.
+
+iii) The probability that a randomly selected person does not have COVID-19 given a positive result from the swab test is 0.0541.
+
+
+
+
+
+### QUESTION 6
+```{r}
+### Number of possible ways to elect a President,Vice President and Treasurer from 21 members.
+permutation <- factorial(21)/factorial(21-3); permutation
+
+
+### P(all selected members are either Ghanaian or international students)
+P_allGhanaiansorInternationals <- (6/21 * 5/20 *4/19)+(15/21 * 14/20 *13/19);
+
+### P(at least one Ghanaian and at least one international student)
+P_atLeastOneEach <- 1 - P_allGhanaiansorInternationals; P_atLeastOneEach
+
+
+```
+a) Out the 21 members, the club can elect a President, Vice President and a Treasurer in 7980 possible ways.
+
+b) The probability that there is at least one international student and at least one Ghanaian student among the three officers selected is 0.6429.
+
+
+
+
+
+### QUESTION 7
+```{r}
+# Create histogram of insurance premiums
+insurance <- data $ Premium
+hist(insurance,
+     main = "Monthly Cost of Automobile Insurance",
+     xlab = "Cost(in dollars)",
+     col="#0F7F7F")
+
+# Calculate values of the mean, median and standard deviation
+mean <- mean(insurance); mean
+medianValue <- median(insurance); medianValue
+deviation <- sd(insurance); deviation
+totalPremiums <- length(insurance)
+
+# Percentage within the first standard from the mean
+premiumsWithin1sd <- sum(insurance < (mean + deviation)) - sum(insurance < (mean - deviation)); premiumsWithin1sd
+
+# Probability a chosen premium is within the first standard deviation from the mean.
+P_S2 <- 100 * (premiumsWithin1sd/totalPremiums); P_S2
+
+# Percentage within the second standard from the mean
+premiumsWithin2sd <- sum(insurance < (mean + 2*deviation)) - sum(insurance < (mean - 2* deviation)); premiumsWithin2sd
+
+# Probability a chosen premium is within the second standard deviation from the mean.
+P_S2 <- 100 * (premiumsWithin2sd/ totalPremiums); P_S2
+
+# Percentage within the third standard from the mean
+premiumsWithin3sd <- sum(insurance < (mean + 3*deviation)) - sum(insurance < (mean - 3*deviation));premiumsWithin3sd
+100 * premiumsWithin3sd / totalPremiums
+
+```
+
+
+b)  According to the empirical rule, a symmetrical histogram should have 68% of the entire distribution within one standard deviation from the mean, 95% within two standard deviations and 99.7% of the observations within 99.7%. However, this is not the case for the above histogram.
+ Although,it is fairly symmetrical because its mean and median are very close (mean is 62.98 and median is 63.5), it doesn't conform to the empirical rule. This is because 62%, 100% and again 100% of premiums are within the first, second and third standard deviations from the mean respectively.
+
+c) On average, drivers pay a monthly premium of 62.98 dollars which is captured by the mean of the distribution. Also from the distribution it can  be seen that a large number of drivers(approximately 95%) pay an amount between 32.62 dollars and 93.34 dollars. This is because within two standard deviations from the mean, the lower and upper bounds are 32.62 and 93.34 dollars respectively.We may therefore conclude that since the difference between these boundaries is only 60.72 dollars, there is less variability in the distribution. 
+
+d)  The probability that an insurance premium chosen at random is within one standard deviation of the mean is 62%. Based on the empirical rule, there should be a 68% chance of selecting a point within one standard deviation from the mean. Consequently, the likelihood of selecting an insurance premium within one standard deviation from the mean is fairly close to the that of the empirical rule. 
+
+e) The probability that an insurance premium chosen at random is within two standard deviations from the mean is 100%. However, based on the empirical rule, there should be a 95% chance of selecting a point within two standard deviations. Consequently, the likelihood of selecting an insurance premium within two standard deviations from the mean is greater than that of the empirical rule, signalling that the two are not close. 
+
+

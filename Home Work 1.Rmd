@@ -1,0 +1,281 @@
+---
+title: "Home Work"
+author: "Gideon Donkor Bonsu"
+date: "05/09/2020"
+output: word_document
+---
+
+```{r setup, include=TRUE}
+library(readr)
+studentData <- read_delim("C:/Users/Gideon Bonsu/Downloads/studentData.txt","\t",escape_double = FALSE, trim_ws = TRUE)
+```
+
+
+###QUESTION 1
+```{r}
+
+#Tabulate response for campusReturn column against their frequencies
+frequencyTable <- table(studentData $ campusReturn)
+
+#Express the individual frequencies as proportions of the entire observation.
+proportionTable <- prop.table(frequencyTable)
+
+#Express the proportions in terms of percentages
+frequencyAsPercentage <- round(100 * proportionTable, 1)
+
+#Create display label for pie chart
+label <- paste(
+  c("After vaccine", "Immediately", "Immediately for online", "January"),frequencyAsPercentage, "%", sep = " ")
+
+#Create pie chart
+pie(frequencyAsPercentage,
+    label = label, 
+    main = " Students Responses on Campus Reopening")
+
+
+```
+
+The responses were not proportionally divided across the 4 categories. This is because a larger portion of students were in favor of returning to campus in January(42.3%) while 32% of students agreed to immediately adopt online studies. Only a few assented to return to campus immediately(16%) with the least number of students agreeing to return only after a vaccine has been found(9.8%).
+
+
+```{r}
+# Tabulate responses for leaderRating column against their frequencies
+barTable <- table(studentData $ leaderRating)
+
+# Rearrange categories of responses from high frequencies to low frequencies
+freqInDesc <-  sort(
+            table(studentData $leaderRating),
+            decreasing = TRUE)
+
+# Plot responses on a bar chart with frequencies expressed as percentages
+barplot(barplot(100 * prop.table(freqInDesc),
+                main = "Students Views On Campus Leadership \n During COVID",
+                xlab = "Student Ratings",
+                ylab = "Frequency",
+                width= c(.8,.8,.8,.8), 
+                xlim = c(0, 5),
+                col="#0F7F7F"))
+```
+
+
+
+
+
+
+
+
+
+
+###QUESTION 2
+
+``` {r}
+# Create histogram 1 for the number of hours students spent on screens.
+hist(studentData $ screenTime,
+     main = "Duration of Time Statistics \n Students Spend On Screens in The COVID Era",
+     xlab = "Time(in hours)",
+     ylab = "Number of Students",
+     xlim = c(0,30),
+     ylim = c(0,50),
+     col = "lightblue")
+
+# Create histogram 2 for the number of hours students spent sleeping.
+hist(studentData $ sleepTime,
+     main = "Duration of Time Statistics \n Students Spend Sleeping in The COVID Era",
+     xlim = c(0,30),
+     ylim = c(0,50),
+     xlab = "Time(in Hours)",
+     ylab = "Number of Students",
+     col = "#99EEBB")
+
+
+# Mean and Standard Deviation for the number of hours student spent on screens
+screenHours <- studentData $ screenTime
+medianValue <- fivenum(screenHours)[2]; medianValue
+IQR <- fivenum(screenHours)[3] - fivenum(screenHours)[1]; IQR
+
+
+# Mean and Standard Deviation for the number of hours student sleeping
+sleepHours <- studentData $sleepTime
+mean(sleepHours)
+sd(sleepHours)
+fivenum(screenHours)
+
+```
+
+Shape: While the histogram for the hours student spent on screens was right skewed,the histogram for hours spent sleeping is symmetrical(single-peaked) in shape.
+
+Center: However, as opposed to the amount of hours students spent on screen devices (which has a cluster of observations around roughly 5 hours); the number of hours students slept had a mean of approximately 6 hours.
+
+Spread:  It can also been seen that the distribution of the time students spent on screens were more spread out (IQR of roughly 6) than the hours they spent on screen sleeping  (with a standard deviation of approximately 2).
+
+Outliers: There were no inconsistencies(outliers) in both distributions.
+
+
+
+
+
+
+
+
+
+###QUESTION 3
+a. The first 5 numbers of the stemplot are 0.4, 0.4, 1.0, 1.9, and 3.0
+
+b. The median number of liters of petrol purchased was 4.4.
+
+c. The mode of the observations was 4.4. This is because 4.4 was recorded 6 times and its more than any other observations.
+
+d. The middle 50% of customers purchased between 3.8 and 5.0 liters of
+petrol.
+
+e. The IQR of the data is 1.2.
+
+```{r}
+#Quartiles
+Q1 <- 3.8
+Q3 <- 5.0
+
+#The interquartile range
+IQR <-  Q3 - Q1; IQR
+
+#Lower and upper boundaries
+lowerBound <- Q1 - (1.5* IQR); lowerBound
+upperBound <- Q3 + (1.5* IQR); upperBound
+  
+```
+
+f. Since 0.4, 0.4, 1.0 and 1.9 litters of petrol were less than the lower boundary, they are outliers. Also 8.3, 8.7, 9.5, and 14.9 litters are greater than the upper boundary, making them outliers.
+
+
+
+
+
+
+###QUESTION 4
+```{r}
+#Create variables for gender and screenTime columns
+gender <- studentData $gender
+timeOnScreen <- studentData $ screenTime
+
+#Make a box and whisker diagrams for the distributions of gender against time spent on screens
+boxplot(timeOnScreen ~ gender,
+        main = "Time Students Spend on \n Screen  Devices  Vs  Gender of Students",
+        ylab = "Time (in hours)",
+        xlab = "Gender")
+
+#Create a numerical summary for each box and whisker
+tapply(timeOnScreen, gender, fivenum)
+
+```
+A larger portion of women spent close to 8 hours(median) on screens while majority of men spent approximately 7 hours(median).  It could also be seen that while 50% of women spent over 8 hours on their screen devices, men who spent above 8 hours on their screens were approximately 38%(25%/2 + 25%).This shows that compared to men, women expended more time on their screens.
+
+
+
+
+
+
+
+
+
+###QUESTION 5
+```{r}
+# Display scatterplot for hours spent on screens and sleeping time 
+scatterPlot <- plot(studentData$screenTime,studentData$sleepTime,
+                    main = "Duration of Time Statistics Students Sleep Vs \n Duration of Time Statistics Students Spend on Screens",
+                    xlab = "Time Spent on Screen Devices (in hours)",
+                    ylab = "Time Spent on Sleep (in hours)",
+                    col= "red"); scatterPlot
+
+# Make a line of regression
+lineOfRegression <- lm(studentData$sleepTime ~ studentData$screenTime)
+abline(lineOfRegression)
+
+# Coefficient of correlation
+cor(studentData$sleepTime, studentData$screenTime, use = "complete.obs")
+
+
+```
+
+
+Even though there is a weak negative correlation between the time students spent on their screen devices and the hours they spent sleeping, there is no linear relationship between the two variables as displayed in the scatterplot.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###QUESTION 6
+
+a. The surgical team demonstrated the best performance in the month of October. This because in that particular month, the number of patients who left the hospital between 2 and 5 days were 13. This was fairly greater than that of November and December which released the 10 and 11 patients respectively between 2 to 5 days.
+
+
+b.In October,the range of number of days patients spent in the hospital was 5 days. It was 8 days in November and 5 days in December.
+
+
+```{r}
+# Standard deviation for October
+octValues <-c(1.5 ,2 ,2.5 ,3 ,3 ,4 ,4 ,4 ,4, 4.5 ,4.5 ,5 ,5, 5 ,5.5 ,6)
+standardDev <- sd(octValues)
+octStandardDev <- (standardDev * length(octValues)-1)/length(octValues); octStandardDev
+
+# Standard deviation for November
+novValues <- c(1 ,2 ,2 ,3, 3 ,3.5, 4 ,4, 4, 4.5 ,4.5 ,5 ,5 ,5, 6, 6.5 ,8)
+standardDev <- sd(novValues)
+novStandardDev <- (standardDev *length(novValues)-1)/length(novValues);
+novStandardDev
+
+# Standard deviation for December
+decValues <- c(3 ,4 ,4 ,4.5 ,5 ,5 ,5 ,5 ,5.5 ,5.5 ,6 ,6 ,6.5 ,7 ,7)
+standardDev <- sd(decValues)
+decStandardDev <- (standardDev *length(decValues)-1)/length(decValues);
+decStandardDev
+
+```
+c. The standard deviations for the months were 1.21 for October, 1.68 for November and 1.07.
+
+
+d. In each month, the surgical team made an effort to release a large number of patients by at most, 5 days. This is captured in the individual mean days patients spent in the hospital each month: October 3.97 days, November 4.18 and December 5.27 days. December had the lowest variability (standard deviation of 1.07 days) compared to November(standard deviation of 1.68) and October(standard deviation of 1.21). This meant that in the month of December, the hospital was more consistent in releasing patients by their 5th day of stay.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

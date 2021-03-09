@@ -1,0 +1,288 @@
+---
+title: "Home Work 5"
+author: "Gideon Donkor Bonsu"
+date: "07/11/2020"
+output: word_document
+---
+
+```{r setup, message = FALSE}
+library(descr)
+load("glsshouseholdSec1_Sec5merged.RData")
+```
+
+
+### QUESTION 1
+
+```{r}
+
+# Probability that there will be no 100-year floods in the 21st century
+prob_no100yearFlood <- dpois(0,1); prob_no100yearFlood
+
+# Probability that there will be exactly one 100-year flood in the 21st century
+prob_one100yearFlood <- dpois(1,1); prob_one100yearFlood
+
+# Probability that there will be exactly two 100-year flood in the 21st century
+prob_two100yearFlood <- dpois(2,1); prob_two100yearFlood
+
+# Probability that there will be three or more 100-year floods in any 100-year period
+prob_greaterThan3 <- 1 - ppois(2,1); prob_greaterThan3
+
+```
+
+a) The probability that no 100-year floods will be recorded in the 21st century is 0.3679.
+
+b) The probability that exactly one 100-year flood will be recorded in the 21st century is also 0.3679. However, there is a 0.1839 chance that two 100-year floods will occur.
+
+c) The probability that there will be three or more 100-year floods in any 100-year period is 0.0803.
+
+```{r}
+# Create a spike plot of the probability distribution for the number of 100-year floods in a given 100-year.
+numberOfOccurences <- c(0:10)
+probabilities <- dpois(numberOfOccurences,1)
+
+plot(numberOfOccurences, probabilities,
+     main = "Probability Distribution of 100-Year \n Floods In Ghana",
+     ylab = "Probability", xlab = "Number of Floods",
+     ylim = c(0,0.4))
+
+points(numberOfOccurences, probabilities, pch = 16, col = "red")
+
+
+# Calculate the mean and standard deviation of the distribution
+mean <- sum(numberOfOccurences * probabilities); mean
+deviation <-sqrt(sum((numberOfOccurences - mean)^2 * probabilities)); deviation
+```
+d) The probability distribution for the occurrence of 100-year floods in Ghana is heavily skewed to the right. This is understandable because as the number of occurrences increase over the interval, we expect a lower likelihood. For instance, intuitively, recording ten 100-year floods is very unlikely as compared to observing one occurrence. In the long run, we expect to record one 100-year flood (mean of the distribution) where the number of possible floods deviates from this value by 1 (standard deviation).
+
+
+### QUESTION 2
+```{r}
+# The probability that the next call will arrive within 5 minutes (note: 5 minutes = 5/60 hours) 𝑃(𝑋 ≤ 5/60). 
+p_within5Mins <- pexp(5/60, 10); p_within5Mins
+
+# The probability that the next call will arrive within 10 minutes
+p_within10mins <- pexp(10/60, 10); p_within10mins
+
+# Given a mean rate of 25 calls per hour,the probability that the next call will arrive within 5 minutes.
+p_within5Mins1 <- pexp(5/60, 25); p_within5Mins1
+
+# Given a mean rate of 25 calls per hour,the probability that the next call will arrive within 10 minutes.
+p_within10mins1 <- pexp(10/60, 25); p_within10mins1
+
+
+# Two values between which there is a 95% probability of arrival times between calls.
+lowerBound <- qexp(0.025, 25); lowerBound
+upperBound <- qexp(0.975,25); upperBound
+
+
+```
+a) At a mean rate of 10 calls per hour, the probability that the next call will arrive within 5 minutes is 0.5654.
+
+b) At a mean rate of 10 calls per hour, the probability that the next call will arrive within 5 minutes is 0.8111.
+
+c) Given a new mean rate of 25 calls per hour,the likelihood that the next call will arrive within 5 minutes is 0.5654. On the other hand, there is a 0.9845 chance that the next call will arrive within 10 minutes.
+
+d) With calls now arriving at a mean rate of 25 per hour, 95% probability arrival times between calls will lie between 0.0010 hours and 0.1476 hours.
+
+
+
+
+### QUESTION 3
+```{r}
+# Confidence interval for the population mean
+sample_mean <-15.3 
+s <- 3.2
+n <- 125;
+
+# Since the sample size is 125, using z* provides a good approximation
+margin_of_error <- 1.96 * (s/sqrt(n)); margin_of_error
+lowerBound1 <- sample_mean - margin_of_error; lowerBound1
+upperBound1 <- sample_mean + margin_of_error; upperBound1
+
+
+# Confidence interval for the population proportion.
+p <- 83/125
+margin_of_error1 <- 1.96 * (sqrt((p *(1-p))/n)); margin_of_error1
+lowerBound2 <- p - margin_of_error1; lowerBound2
+upperBound2 <- p + margin_of_error1; upperBound2
+
+
+```
+
+a) The interval is between 14.74 and 15.86.
+
+b) We are 95% confident that the average weekly television viewing time for all residents of Greater Accra aged 55 or older is between 14.74 and 15.86.
+
+c) The interval is between 0.58 and 0.75.
+
+d) We are 95% confident the proportion of Greater Accra residents age 55 years and over who watch the evening news at least three weeknights per week is between 58.12% and 74.68%.
+
+
+### QUESTION 4
+```{r}
+# Step 2: Collect and summarize the data
+# Random sample greater than 30.
+x <- c(5.65, 5.44, 5.42, 5.42, 5.53, 5.34, 5.54, 5.45, 5.52, 5.41, 5.57, 5.40, 5.53, 5.54, 5.55, 5.62, 5.56, 5.46, 5.44, 5.51, 5.47, 5.40, 5.47, 5.61, 5.53, 5.32, 5.67, 5.29, 5.49, 5.55, 5.77, 5.57, 5.42, 5.58, 5.58, 5.50, 5.32, 5.50, 5.53, 5.58, 5.61, 5.45, 5.44, 5.25, 5.56, 5.63, 5.50, 5.57, 5.67, 5.36)
+
+# Checking if the distribution is normal.
+hist(x, main = "Weight of Tea Per Bag in a Factory", xlab = "Amount (in grams)")
+
+# Calculating the sample mean and sample standard deviation
+x_bar <- mean(x); x_bar
+s <- sd(x); s
+
+# Step 3: Assess the evidence
+t.test(x, mu = 5.5, alternative = "two.sided")
+```
+i) **Step 1: State the claim**: 
+  Null Hypothesis: The mean weight of tea in a bag filled by the machine is 5.5 grams(i.e. Ho: mu = 5.5grams).
+
+  Alternate Hypothesis: The mean weight of tea in a bag filled by the machine is different from 5.5 grams.(i.e. Ha: mu != 5.5grams).
+
+ii) **Step 2: Collect and summarize the data**: 
+ The sample mean is 5.5018 and its sample standard deviation is 0.1054764. 
+ We will use sample standard deviation to estimate the population standard deviation, which introduces greater uncertainty, therefore we have to conduct a t-test for the population mean.
+Again, we will have to assume that the bags of tea were randomly selected.
+  Finally, the sample is over 30 and the distribution, although doesn't matter in this case, is fairly normal as seen in the histogram. 
+All the required conditions are met, hence, we can carry on with the test.
+
+iii) **Step 3: Assess the evidence**:     
+From the above calculations, the test statistic is 0.12067 with an associated p-value of  0.9044.
+
+iv) **Make conclusion**:
+  At the 0.05 level of significance, the p-value is large (0.9044 > 0.05) which means the data is not significant. Therefore, the data does not provide enough evidence to reject the claim that the mean weight of tea in a bag filled by the machine is 5.5 grams. Hence, we cannot conclude that the average weight of tea per bag is different from 5.5 grams.
+  
+  We are susceptible to making a type 2 error. This is because we failed to reject the null hypothesis which can turn out to be true.
+
+
+
+### QUESTION 5
+```{r}
+mean <- 1068
+s <-  204
+# The probability that a select student's score on the SAT is at least 1130
+p_atLeast1330 <- 1 - pnorm(1130, mean, s); p_atLeast1330
+
+# The probability that the mean score of 25 selected graduates is at least 1130
+p_atLeast1330s <- 1 - pnorm(1130, mean, s/sqrt(25)); p_atLeast1330s
+
+```
+a) If 1 high school graduate is randomly selected, the probability that his or her score on the SAT is at least 1130 is 0.3806.
+
+b) If 25 high school graduates are randomly selected, find the probability that their mean score is at least 1130 is 0.0643.
+
+**Step 1: State the claim**:
+Null Hypothesis: High school graduates who received the Columbia Review Course will have a mean score of 1068 (i.e. Ho: mu = 1068).
+
+Alternate Hypothesis: High school graduates who received the Columbia Review Course will have a mean score higher than 1068 (mu > 1068).
+
+**Step 2: Collect and summarize the data**:
+The population standard deviation for test scores for high school graduates who took the SAT in 2018 during their final year of high school is known. Hence, we can conduct a z-test. 
+Again, the distribution of the test scores is known to be normal and the high school graduates used for the study were randomly selected.
+The required conditions are therefore met, hence, we can proceed with the test.
+
+**Step 3: Assess the evidence**:
+```{r}
+# Calculating the test statistic
+s <- 204/sqrt(25)
+diff_m <- 1130 - 1068
+z_test <- (diff_m/s);z_test
+
+# P-Value
+pnorm(z_test, lower.tail = FALSE)
+
+```
+From the above calculations, the test statistic is 1.5196 with an associated p-value of  0.0643.
+
+**Make conclusion**:
+  At 0.10 level of significance, the p-value is small (0.0643 < 0.10) which means the data is significant. Therefore, it does provide enough evidence to reject the claim that high school graduates who received the Columbia Review Course will have a mean score of 1068. Hence, we can conclude that indeed the average SAT score of graduates who received the Columbia Review Course is higher than the national average.
+
+d)  We are susceptible to making a type 1 error. This is because we rejected the null hypothesis which can turn out to be true.
+
+### QUESTION 6
+```{r}
+
+
+# Creating a variable subset with the variables s2aq3 and loc2
+variable_subset <- subset(glsshouseholdSec1_Sec5merged, select=c("s2aq3","loc2"))
+
+
+# Creating a new variable that is equal to 0 if the respondent did not attain a secondary school qualification and is equal to 1 if the respondent did attain a secondary school qualification or higher. 
+variable_subset $ education <- rep(NA, nrow(variable_subset))
+variable_subset $ education[variable_subset $ s2aq3 < 3] <- 0
+variable_subset $ education[variable_subset $ s2aq3 >= 3] <- 1
+
+# Collecting and summarize the data for Hypothesis Testing
+freq(variable_subset$education)
+p_hat <- 0.153
+p <- 0.147
+sample_size <- 42140
+
+# Checking if conditions for using a z-test are met
+sample_size * p >= 10
+sample_size *(p *(1-p)) >= 10
+
+# Finding the test statistic and p-value
+zTest <- (p_hat - p)/sqrt((p * (1-p))/sample_size); zTest
+pValue <- pnorm(zTest, lower.tail = FALSE) + pnorm(-zTest); pValue
+
+
+# Constructing a 95% confidence interval estimate for the proportion of Ghanaians age 15 and older who had a secondary school qualification or higher in 2018.
+lower <- p_hat - (2 *  sqrt((p_hat * (1-p_hat))/sample_size)); lower
+upper <- p_hat + (2 *  sqrt((p_hat * (1-p_hat))/sample_size)); upper
+```
+**Step 1: State the claim**: 
+Null Hypothesis : The percentage of Ghanaians age 15 and older with a secondary school qualification or higher has not changed since 2013. (Ho: Po = 0.147)
+
+Alternate Hypothesis : The percentage of Ghanaians age 15 and older with a secondary school qualification or higher has changed since 2013. (Ho: Po != 0.147)
+
+**Step 2: Collect and summarize the data**:
+Sample proportion is 0.153. Since (42140 * 0.147) >= 10 and (42140 * (1-0.147)) >= 10, we can proceed with the z-test.
+
+**Step 3: Assess the evidence**: 
+While the test statistic is 46.13072, its p-value is 0.0005
+
+ **Make conclusion**:
+  At the 0.05 level of significance, the p-value is very small (0.0005 < 0.05) which means the data is significant. Therefore, it does provide enough evidence to reject the claim that the percentage of Ghanaians age 15 and older with a secondary school qualification or higher has not changed since 2013. Hence, we can conclude that there has been changes to that percentage since 2013.
+
+d) Since we failed to reject the null hypothesis, we are susceptible to making a type 2 error in this case. 
+
+e) At 95% confidence level, the interval is between 0.1495 and 0.1565
+
+
+### QUESTION 7
+a)
+```{r}
+
+# Generate a table for the proportion of Ghanaians, age 15 and over, who have attained a secondary school qualification or higher.(explanatory var = columns)
+t1 <- table(variable_subset $ education, variable_subset $ loc2); t1
+
+# convert to a table of proportions, 2 specifies column proportions
+t1_prop <- prop.table(t1,2); t1_prop
+
+# Generate a barplot for the proportion of Ghanaians, age 15 and over, who have attained a secondary school qualification or higher."
+barplot(t1_prop[2, ], 
+        main = " Proportion of Young Ghanaians Who Have \n a Secondary School Qualification or Higher.",
+        names = c("Urban\nYouth", "Rural\nYouth"),
+        ylab = "Have an SHS Qualification or Higher.",
+        ylim=c(0,0.30), col = "#3c1361")
+
+
+```
+
+Given that 35% urban Ghanaians, age 15 and over, attained a secondary school qualification or higher as opposed to approximately 16% of rural Ghanaians, the graph suggest that there is a possible association between urban vs rural location and educational attainment in Ghana.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

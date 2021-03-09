@@ -1,0 +1,227 @@
+---
+title: "Home Work 2"
+author: "Gideon Donkor Bonsu"
+date: "12/09/2020"
+output: word_document
+---
+
+```{r setup, include=TRUE}
+library(readr)
+GhanaCities <- read_delim("GhanaCities.txt","\t", escape_double = FALSE, trim_ws = TRUE)
+
+library(readr)
+studentData <- read_delim("studentData.txt", "\t", escape_double = FALSE, trim_ws = TRUE)
+```
+
+### QUESTION 1
+
+a) The explanatory variable is "Gender". The response variable is "Preference 
+about when to return to campus."
+
+
+```{r}
+#Construct a two-way table for "Gender" and "Preference about when to return to campus
+twoWayTable <- table(studentData $campusReturn, studentData $ gender);twoWayTable
+colnames(twoWayTable) <- c("Male", "Female")
+rownames(twoWayTable) <- c("After Vaccine", "Immediately", "Immediately for Online", "January")
+
+```
+c) The column percentages are used because the explanatory variables are placed in the column sections of the table.
+
+
+```{r}
+# Calculate the column percentages of the table
+percentageTable <- round(100*prop.table(twoWayTable,2),1);percentageTable
+```
+
+```{r}
+sum(percentageTable[1:4])  #summation of percentages in the male column.
+sum(percentageTable[5:8])  #summation of percentages in the female column.
+```
+e) The column percentages for both the male and female columns sum up to approximately 100%.
+
+f) The survey shows that 21.6% males and 11.3% females would like to immediately return to campus for in-person learning.
+
+g) While 31.8% of male students would prefer to return to campus in January, 50.9% female students agree to go back to campus in January.
+
+
+h) The percentages of response by each gender in the categories are not proportional. For responses in favor of online studies, there are 8.1% (36.4% - 28.3%) more males than females with 10.3% (21.6%-11.3%) more males in favor of returning immediately to campus than females. Again, 19.1%(50.9% - 31.8%) more females agree to go back to campus in January. These clearly convey the fact that many of the responses are influenced by gender. Hence, from mere observation of the two way table, one can conclude that there is indeed a gender effect on students' preferences.
+
+
+### QUESTION 2
+
+a) The study is a prospective observational study. It qualifies as an observational study because although the researchers instructed the subjects to carry on with their kenkey intake, they never assigned the number of times each group had to eat kenkey. In other words, the researchers did not manipulate the explanatory variable (number of times kenkey is eaten) in any way. They just observed how each group's kenkey intake affected their diabetic levels. The study was prospective in the sense that the response of the groups to the amount of kenkey eaten was recorded 3 months after their diabetic tests.
+
+b) By taking control of the possible combinations of nitrogen and phosphorus could have for each plot, the researchers were carrying out an experiment. Although it may seem impossible to classify this study as either blind or not since there were no subjects involved, it qualifies as a blind experiment because the researchers were well aware of the combinations they fed each of the plots. 
+
+
+
+### QUSETION 3
+
+a) The project is an observational study. As opposed to experiments which requires two variables to be complete, this study analyzes only one variable (growth of health service providers). In addition to that, the purpose of the research was to just examine(observe) the growth rate of private and public hospitals as they naturally occur in midsize cities in Ghana.  
+
+b) Cluster sampling.
+
+c) The sampling frame for the study is 4 midsize cities with population greater than 45,000 but less than 250,000 people.
+
+
+```{r}
+midCities<-GhanaCities[GhanaCities$Population > 45000 & GhanaCities$Population <
+250000, ]; midCities
+
+sampleOfCities <- sample(1:length(midCities$City),4)
+
+rowsOfCities <- midCities[sampleOfCities,];rowsOfCities
+```
+
+e) In the first line of code, we find the cities with populations between 45000 and 250000 and assign the result to the variable "midCities".
+    In the second line, we randomly sample 4 cities, based on their indexes, from areas with populations between 45,000 and 250000. Then, the resulting list of numbers is stored in "sampleOfCities".
+    Finally, we use the list of indexes from line 2 (the variable "sampleOfCities") to return their respective rows of cities in line 3.
+
+
+```{r}
+hist(midCities $ Population,
+    xlim = c(0, 300000),
+    ylim = c(0, 12),
+    breaks = 12,
+    col="#0F7F7F",
+    main = "Populations Of Midsize Cities in Ghana",
+    xlab = "Population( in number of residents)",
+    ylab = "Counts of Cities"
+    )
+
+#Finding outliers in the distribution
+fiveNumSum <- fivenum(midCities $ Population); fiveNumSum
+IQR <- fiveNumSum[4]- fiveNumSum[2]; IQR
+leftOUtliers <- sum(midCities$Population < fiveNumSum[2]-1.5*IQR ); leftOUtliers
+rightOUtliers <- sum(midCities$Population > fiveNumSum[4]+ 1.5*IQR ); rightOUtliers
+
+
+```
+Although the bulk of midsize cities in Ghana have lower population sizes, only a few have large number of residents residing in them. This can be inferred from the skewed nature(right skewed) of the histogram. That been said, the median of the observation reveals that there is a cluster of midsize cities with roughly 80820 residents. Again, it could be seen that 50% of all the cities observed have between 62,364 and 105,821 residents living in them as the lower and upper quartiles are 62,364 and 105,821 residents respectively. There were also some extremities in the distribution because 5 cities were highly populated than the rest. In other words, there were 5 outliers.
+
+
+
+
+
+
+### QUESTION 4
+
+```{r}
+sleepHours <- studentData $sleepTime
+hist(sleepHours,
+     breaks = 10,
+     xlim = c(0, 12),
+     ylim = c(0,60),
+     col="lightblue",
+     main = "Duration of Hours Statistics Students \n Spent on Screen Devices",
+     xlab = "Time(in hours)",
+     ylab = "Number of Students")
+
+mean <- mean(sleepHours); mean
+median <- median(sleepHours); median
+sdv <- sd(sleepHours); sdv
+totalStudents <- length(sleepHours); totalStudents
+
+# Percentage of students less than the mean
+perOfstudents <- 100 * (sum(sleepHours < mean)/totalStudents);perOfstudents
+
+#Percentage of students within one standard deviation of the mean
+100 * ((sum(sleepHours < (mean + sdv)) - (sum(sleepHours < (mean - sdv))))/totalStudents)
+
+#Percentage of students within two standard deviations of the mean
+100 * ((sum(sleepHours < (mean + 2*sdv)) - (sum(sleepHours < (mean - 2*sdv))))/totalStudents)
+
+#Percentage of students within three standard deviations of the mean
+100 * ((sum(sleepHours < (mean + 3*sdv)) - (sum(sleepHours < (mean - 3*sdv))))/totalStudents)
+
+
+#Finding the lower bound of the distribution
+fiveSum <- fivenum(sleepHours); fiveSum
+
+lowerQuartile <- fiveSum[2]; lowerQuartile
+upperQuartile <- fiveSum[4]; upperQuartile
+IQR <- upperQuartile - lowerQuartile; IQR
+lowerBound <- lowerQuartile - 1.5*IQR;lowerBound
+
+
+
+
+```
+
+a) There are approximately 59.79% of students below the mean.
+
+b) Approximately 63.40% of students are within one standard deviation from the mean. 
+
+c) Also, about 97.94% of students are within two standard deviations from the mean, and 
+
+d) Finally, 98.97% of the students surveyed are within three standard deviations from the mean.
+ 
+ According to the empirical rule, a symmetrical histogram should have 64% of the entire distribution within one standard deviation from the mean, 95% within two standard deviations and 99.7% of the observations within 99.7%. However, this is not the case for the above histogram.
+ Although,it is fairly symmetrical because its mean and median are very close (mean is 6.04 and median is 6), it doesn't conform to the empirical rule. This is because 63.40%, 97.94% and 98.97% of students are within the first, second and third standard deviations from the mean respectively.
+
+e) While it would be quite normal for a statistics student to sleep less than 3 hours on a typical weeknight, it is unusual of any such student to sleep less than 2 hours.This is because the lowest boundary of hours student slept, as per the observations, is 2 hours (5 - 1.5(7-5)). Hence, any duration of time below that is inconsistent(an outlier).
+
+
+
+
+
+
+
+### QUESTION 5
+a) Systematic Sampling.
+
+b)
+```{r}
+# Silver Tower Branch
+waitingTimes <- c(8.4,6.6 ,9.0 ,5.6 ,2.2, 5.3 ,6.6 ,7.3, 7.5 ,7.2,6.0, 7.5, 8.9, 4.5)
+stbsummary <- summary(waitingTimes);stbsummary
+sd(waitingTimes)
+
+# Accra Mall Branch
+waitingTimes2 <- c(7.9 ,7.0 ,7.1 ,7.4 ,6.7 ,6.7 ,7.3 ,7.6 ,6.0, 7.3,7.2, 6.8)
+ambsummary <- summary(waitingTimes2); ambsummary
+sd(waitingTimes2)
+
+# Osu Branch
+waitingTimes3 <- c(9.4 ,8.3 ,9.4 ,6.6 ,3.0 ,7.8 ,10.5 ,9.8 ,9.8 ,4.7,5.9)
+obsummary <- summary(waitingTimes3);obsummary
+sd(waitingTimes3)
+
+```
+While it may seem that on average, customers spend a lower waiting time of 6.61 minutes at the Silver Tower Branch than the other branches,it actually occurs rarely. This is because the distribution of waiting times at Silver Tower Branch has a relatively large standard deviation of 1.83 minutes, which proves that it is inconsistent in serving all its customers after 6.61 minutes into their arrival.
+
+On the other hand, customers at the Osu Branch spend an average of 7.75 minutes waiting. However, with the standard deviation of 2.42 minutes( 1.33 times that of Silver Tower Branch),the highest of all the branches, it is very unlikely that this happens often.Perhaps more unlikely than at Silver Tower Branch. Put differently,customers are more prone to spending a lot of waiting minutes at Osu than at the other branches.
+
+At the Accra Mall Branch, customers wait for an average of 7.08 minutes. Unlike the other branches, this branch is very consistent in serving its customers after 7.08 minutes into their arrival. This is because the standard deviation of the distribution is only 0.50 minutes, the lowest of three branches. It further supplements the fact indeed on average a customer is more likely to wait for just 7.08 minutes at the branch.
+
+From this, it can be concluded that the Accra Mall Branch definitely has a better performance in terms of waiting time than the other branches with Osu having the worse performance.
+
+
+
+
+### QUESTION 6
+
+a) The method of sampling is a convenience sampling.This is because ASC members chose a place and time convenient for them and this would very much lead to some level of bias. That is,the data gathered would be representative of only the students who happened to be around or eat at the Hive at the time and not the entire student population.
+
+b) Cluster Random Sampling. If we think of each crate of tomatoes as a group, then selecting and examining 5 crates from 100s constitutes a cluster sampling. Although this is approach is less bias as every crate of tomatoes has the probability of being picked and examined, it is not representative of all the tomatoes in a truck. A better way is to randomly choose 5 tomatoes from each crate and examine them. It will definitely be costly on time but will do a better job at representing all the tomatoes in a truck.
+
+c) Systematic Sampling. This is prone to bias because not every microchip has the possibility of being selected, hence, the sampling would not be entirely representative of all the microchips produced.
+
+d) Simple Random Sampling. The sample derived from this method is very representative of the entire student population. This is because by randomly selecting students from the entire student population, every student has a chance of being selected and this reduces any bias.
+
+
+
+
+### QUESTION 7
+
+a) A possible lurking variable that could possibly influence the correlation between foot size and reading ability is age. Ordinarily, as people grow in age their ability to read tend to also increase. In fact, an increase in foot size can be ascribed to age.
+
+b) It's not enough to say that "coffee drinkers live longer". It is a hasty conclusion as there could be many factors that decreases mortality among coffee drinkers and one of them is exercise. The research failed to account for how the exercise routines of the subjects might have contributed to their overall health. Therefore exercise is a possible lurking variable that could affected the researchers' results.
+
+
+
+
+
+
+

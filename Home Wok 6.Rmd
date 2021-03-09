@@ -1,0 +1,491 @@
+---
+title: "Home Work 6"
+author: "Gideon Donkor Bonsu"
+date: "29/11/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+library(descr)
+library(UsingR)
+
+load("fwb_subset.R")
+
+```
+
+### QUESTION 1
+
+a) For this analysis, the explanatory variable is education level while the response variable is the financial wellbeing of US citizens. Since the role-type classification is C to Q and the number of categories in the explanatory variable is more than two, we will use ANOVA for our statistical test.
+
+b)
+```{r}
+
+# Subsetting needed variables from the dataset
+well_being <- subset(fwb_subset, select = c("HHEDUC", "FWBscore"))
+
+#calculate mean and sd for each level of smoke
+grp_means <- tapply(well_being$FWBscore, well_being$HHEDUC, mean, na.rm = TRUE); grp_means
+grp_sd <- tapply(well_being$FWBscore, well_being$HHEDUC, sd, na.rm = TRUE); grp_sd
+
+#what is the sample size for each group? 
+grp_ns <- tapply(well_being$FWBscore, well_being$HHEDUC, length); grp_ns
+
+# Plotting a Bivariate graph of highest level of education by financial wellbeing
+plot(FWBscore ~ HHEDUC, data=fwb_subset,
+     names= c("Below\n H.S.", "H.S", "Some\nCollege",
+              "BSc","Grad"),
+     xlab = "Highest Level of Education",
+     ylab = "Financial Wellbeing (Score)",
+     main = "Financial Wellbeing Against Education\n Level of US Citizens",
+     col = "lightblue")
+
+points(grp_means, pch = 16, col = "red")
+
+# Conducting an ANOVA statistical test.
+aov_results <- aov(FWBscore ~ HHEDUC, data = fwb_subset)
+summary(aov_results)
+
+
+
+
+```
+It is clear from the graph that the mean financial wellbeing is different at each educational level of US citizens. This suggests that there is a possible relationship between the two variables.
+
+c) 
+*Step 1: Stating the claim*
+
+Ho: Mean financial wellbeing score is equal at all educational levels.
+
+Ha: Mean financial wellbeing score is not equal at all educational levels.
+
+*Step 2: Collecting and Summarizing the data*
+
+*Group Means* 
+
+Less than high school         31.92063, 
+ High school degree/GED        38.68440, 
+ Some college/Associate        39.49577, 
+ Bachelor's degree             43.27203,
+ Graduate/professional degree  47.03339.
+                                        
+*Group Standard Deviations* 
+
+Less than high school        12.22350,       
+ High school degree/GED       14.19961, 
+ Some college/Associate       13.96765,           
+ Bachelor's degree            13.02821,
+ Graduate/professional degree 12.88702.
+                                                      
+Since:
+1) n > 30 for each group (when sample sizes are small, must show roughly normal
+distribution for each group)
+2) Independent samples randomly selected
+3) Ratio of greatest standard deviation to smallest standard deviation is less than 2, we can proceed with the ANOVA test.
+                   
+  
+
+*Step 3: Assess the evidence*
+
+F = 121.2.
+P-Value is approximately 0.
+
+*Step 4: Make a conclusion*
+
+ Since the p-value is extremely small (p-Value < 0.05), the data is statistically significant. In other words, the data provides enough evidence to reject the claim that the mean financial wellbeing score of US citizens is equal at all educational levels. Therefore, we can conclude that indeed education does have an effect on the financial wellbeing of US citizens.
+ 
+d) A type 1 error could have been made. That is, there is a 5% chance that the education level of US citizens has no effect on their financial wellbeing. 
+ 
+e) Although there are differences in the mean financial well-being among the various levels of education, the post-hoc test shows that the widest difference of mean financial well-being occurred between citizens with bachelor's degree and those whose education level is less than high school.
+```{r}
+# Conducting a post-hoc test
+TukeyHSD(aov_results)
+
+```
+
+
+f) Employment might also the association between education level of the household and financial well-being score. This is because people with higher education generally tend to gain employment easily which in turn, improves their financial well-being.
+
+
+
+### QUESTION 2
+
+a) For the research question, the explanatory variable is generation while the response variable is how Americans view the relationship between hard work and future success. Since the role-type classification is C to C, we will use chi-square test for our statistical test.
+
+```{r}
+
+t1 <- table(fwb_subset$SWB_agree, fwb_subset$generation)
+rownames(t1) <- c("Disagree","Agree")
+t1
+
+# convert to a table of proportions, 2 specifies column proportions
+t1_prop <- prop.table(t1,2); t1_prop
+
+barplot(t1_prop[2,],
+        main = "If I work Hard Today I Will Be More\nSuccessful In The Future",
+        xlab = "Generation",
+        ylim = c(0, .8),
+        col  = "#0F7F7F",
+        ylab = "Proportion of Citizens Who Agree")
+
+chisq_results <- chisq.test(fwb_subset$SWB_agree, fwb_subset$generatio); chisq_results
+chisq_results$observed
+chisq_results$expected
+chisq_results$residuals
+
+
+
+
+```
+
+*Step 1: Stating the claim*
+
+Ho: There is no relationship between generation and how Americans view the relationship between hard work and future success. They are independent.
+
+Ha: There is relationship between generation and how Americans view the relationship between hard work and future success. They are not independent.
+
+*Step 2: Collecting and Summarizing the data*
+
+  The proportion and counts of the categories of generation  and how they view the relationship between hard work and future success are summarized in the table above. However, to proceed with the test we have to check if the appropriate criteria are met.
+1. The sample is indeed random.
+2. The expected counts are all greater than 5. Since these conditions are true, we can carry out the chi-test.
+
+*Step 3: Assess the evidence*
+
+Chi-Square = 36.884.
+P-Value is approximately 0.
+
+*Step 4: Make a conclusion*
+
+ Since the p-value is extremely small (p-Value < 0.05), the data is statistically significant. In other words, the data provides enough evidence to reject the claim that there is no is no relationship between generation and how Americans view the relationship between hard work and future success. Therefore, we can conclude that indeed the type of generation influences how Americans view the relationship between hard work and future success.
+
+d) A type 1 error could have been made. That is, there is a 5% chance that this conclusion drawn from analyzing the data is wrong.
+
+f) The data reveals that the generation of Americans affect their views on how hard work is related to future success. Of all the generations, the proportion of millennials who agree that hard work is indeed associated with future success is the largest (about 76%). This is followed by Gen X with a proportion of about 73% (a 3% difference from millennials). While the proportion of the Boomer generation roughly 9% and about 6% lower compared to the millennial and Gen X generations respectively, it is approximately 4% higher than that of the Pre- Boomer generation. This renders the Pre-Boomer generation  as the category with the lowest proportion of citizen who agree to the relationship between hard work and future success.
+
+### QUESTION 3
+```{r}
+# Moderation
+t2 <- ftable(fwb_subset$generation  ~  fwb_subset$SWB_agree + fwb_subset$PPGENDER);t2
+t2_prop  <- prop.table(t2,2);t2_prop
+
+
+barplot(t2_prop[3:4,],main = "If I work Hard Today I Will Be More\nSuccessful In The Future", beside = TRUE, names = c("Pre Boomer", "Boomer", "Gen X", "Millenial"), ylab = "Proportion of Citizens Who Agree", ylim = c(0,0.5) , col = c("#0F7F7F","light blue"))
+legend("topleft", c("Male","Female"), fill = c("#0F7F7F","light blue"))
+
+
+
+```
+
+While gender seems to have a slight effect on how the different generations view hard work and future success, the graph shows that the widest gap between males and females on their views regarding hard work and future success occurred in the Gen X generation.
+
+### QUESTION 4
+
+
+a) *Population Interest:* Undergraduate students.
+
+   *Sampling Frame     :* First-year, Second-year, Third-year and Fourth-year students.
+
+   *The Type of Sampling Used:* Stratified sampling. This sampling approach ensures that a very representative sample is drawn from the the population of interest. Clearly, it is not subjected to any bias. In fact, the researcher wanted to study how year groups was related to sleeping habits, this is the best the sampling approach.
+
+
+
+b) *Population Interest:* Ghanaians. 
+
+   *Sampling Frame     :* People gathered outside the courthouse waiting to hear the Supreme Court's decision.
+
+   *The Type of Sampling Used:* Convenience sampling. The subjects used for the study happened to be at the place and time suitable for the researcher. Further, the researcher handpicked his sample based on his own preference which introduces an element of bias. As there is no randomness in the sample, it is not representative of population under consideration.
+
+
+
+c) *Population Interest:* Public hospital nurses in the Ashanti Region. 
+
+   *Sampling Frame :* Public hospitals in the Ashanti region
+
+   *The Type of Sampling Used:* Cluster Sampling. This sampling approach is not prone to any bias. As the 10 public hospitals were randomly sampled from the 170, that element of randomness ensures that the nurses interviewed are representative of the public hospital nurses in the Ashanti Region. 
+
+
+
+### QUESTION 5
+```{r}
+
+# Drawing a histogram for the data
+hist(rat,
+      main = "Survival Times of Rats Exposed to Radiation",
+     xlab = "Survival Times (in days)",
+     col="#0F7F7F")
+
+mean(rat)
+median(rat)
+
+#Finding outliers in the distribution
+fiveNumSum <- fivenum(rat); fiveNumSum
+IQR <- fiveNumSum[4]- fiveNumSum[2]; IQR
+leftOUtliers <- sum(rat < fiveNumSum[2]-1.5*IQR ); leftOUtliers
+rightOUtliers <- sum(rat > fiveNumSum[4]+ 1.5*IQR ); rightOUtliers
+
+```
+
+Although a large amount of rats exposed radiation have higher survival times, quite a small number have less time to survive. This can be inferred from the roughly skewed nature(left skewed) of the histogram. That been said, the median of the observation reveals that there is a cluster of rats survive in 119 days. Again, it could be seen that 50% of all the rats observed survived within 85.5 and 144.5 days as the lower and upper quartiles were 85.5 and 144.5 residents. There were also no extremities or unusual survival times in the distribution.
+
+
+### QUESTION 6
+```{r}
+counts <- c(41,29,46,21)
+dim <- c(2,2)
+rowlab <- c("Yes","No")
+collab <- c("New Page", "Old Page") 
+
+#now create the table of counts
+tbl <- array(counts, dim, list(rowlab, collab)); tbl
+
+#Run the chi-square test of independence
+chi_results <- chisq.test(tbl)
+chi_results
+
+
+```
+
+*Step 1: Stating the claim*
+
+Ho: There is no relationship between payment platforms and the success of transactions. They are independent.
+
+Ha: There is a relationship between payment platforms and the success of transactions. They are independent..
+
+*Step 2: Collecting and Summarizing the data*
+
+  The proportion and counts of payment platforms and the success of transactions are summarized in the table above. However, to proceed with the test we have to check if the appropriate criteria are met.
+1. The sample is indeed random.
+2. The expected counts are all greater than 5. Since these conditions are true, we can carry out the chi-test.
+
+*Step 3: Assess the evidence*
+
+Chi-Square = 1.0987
+P-Value    = 0.2945
+
+*Step 4: Make a conclusion*
+
+ At a significance level of 0.10, the p-value is large (p-Value > 0.10) and as such, the data is not statistically significant. In other words, the data does not provide enough evidence to reject the claim that payment platforms and the success of transactions are independent. Therefore, we cannot conclude that there is a relationship between payment platforms and the success of transactions.
+ 
+ 
+b) Although we observed, from the two-way table of the experiment, that the new payment platform had more successful transactions than on the old platform, our inference test revealed that that data only happened by chance. Hence, it is not statistically significant. Apparently, payment platforms had no relationship with successful transactions. As such, it is reasonable to stick with the old platform just to save up the cost of building a new one.
+
+c) Since we failed to reject the null hypothesis, the result is susceptible to a type 2 error. That is, there is a 10% chance that the conclusion drawn from analyzing the data could be wrong.
+
+
+
+
+
+### QUESTION 7
+a) **Data Management and Subsetting**
+```{r}
+# Subsetting needed variables from the dataset
+my_babies <- subset(babies, select = c("gestation", "wt", "smoke"))
+#plot(my_babies$gestation, my_babies$wt)
+
+
+# Data Management
+#replace error code with NA
+my_babies$gestation[my_babies$gestation == 999]  <- NA
+
+
+
+my_babies$smoke[my_babies$smoke == 9]  <- NA
+#freq(my_babies$smoke)
+
+my_babies$sm <- rep(NA,nrow(my_babies))
+my_babies$sm[my_babies$smoke == 0] <- 0
+my_babies$sm[my_babies$smoke == 1] <- 1
+my_babies$sm[my_babies$smoke == 2 | my_babies$smoke == 3] <- 2
+my_babies$sm <- factor(my_babies$sm)
+
+plot(my_babies$gestation, my_babies$wt)
+```
+
+
+b) **Data Visualization**
+```{r}
+#	Generate a scatterplot of birth weight as a function of gestation for mothers who did not smoke during pregnancy 
+plot(my_babies$wt[my_babies$sm==0] ~ my_babies$gestation[my_babies$sm==0], main="Birth Weight Vs Gestation Period Among \n Smoking And Non Smoking Mothers",xlab="Gestation Period (in days)", ylab="Birth Weight (in ounces)",col="blue")
+
+
+# Add a regression line
+abline(lm(my_babies$wt[my_babies$sm==0] ~ my_babies$gestation[my_babies$sm==0]),lwd=2, col="blue")
+
+
+# Creating the points and a second regression line for mothers who did smoked during pregnancy
+points(my_babies$wt[my_babies$sm==1] ~ my_babies$gestation[my_babies$sm==1], col="red")
+abline(lm(my_babies$wt[my_babies$sm==1] ~ my_babies$gestation[my_babies$sm==1]),lwd=2, col="red")
+
+# Adding a legend
+legend(150,175,legend=c("Smoked","Did Not Smoke"),fill=c("red", "blue"),cex=0.75)
+
+```
+
+From the graph it can be seen that on average the babies of mothers who do not smoke have a higher birth weight than those of the mothers who smoke. On the other hand, the gestation of mothers who smoke is more clustered than for mothers who do not smoke. This suggests that there is a possible correlation between birth weight and gestation moderated by level of smoking.
+
+c) **Conducting Hypothesis Tests for Each Smoking Factor Separately**
+
+**TEST 1: Testing The Linear Relationship Between Birth Weight and Gestation Period Among Mothers Who Have Never Smoked**
+
+*Step 1: State the claim*
+Ho: There is no linear correlation between birth weight and gestation period for mothers who have never smoked.
+
+Ha: There is a linear correlation between birth weight and gestation period for mothers who have never smoked.
+
+*Step 2: Collect and summarize a sample*
+```{r}
+mean(my_babies$wt[my_babies$sm==0], na.rm =TRUE)
+sd(my_babies$wt[my_babies$sm==0], na.rm =TRUE)
+
+mean(my_babies$gestation[my_babies$sm==0], na.rm =TRUE)
+sd(my_babies$gestation[my_babies$sm==0], na.rm =TRUE)
+
+length(my_babies$sm[my_babies$sm ==0])
+```
+
+The observed data looks linear
+, the observations are independent (element of randomness)
+, the distributions of X and Y are fairly symmetrical, no extreme outliers
+and the sample size is large (554).
+
+*Step 3: Assess the evidence*
+```{r}
+cor_results<-cor.test(my_babies$wt[my_babies$sm==0], my_babies$gestation[my_babies$sm==0])
+cor_results
+
+my.lm <- lm(my_babies$wt[my_babies$sm==0] ~ my_babies$gestation[my_babies$sm==0])
+
+summary(my.lm)
+```
+t-statistic = 7.214 
+
+p-value     = 1.864e-12
+
+r           = 0.2975
+
+r_squared   = 0.0443
+
+slope       = 0.30533
+
+*Step 4: Make a conclusion*
+
+For pregnant mothers who have never smoked, there is an extremely strong evidence of a weak positive linear relationship between birth weight and gestation period (r = 0.2975). The statistical evidence indicates that the gestation of a mother who has never smoked accounts for about 4% ( = 0.443) of the variation in the birth weight of her child. Again, the slope of the regression suggests that, on average, the birth weight increases by 0.305 for every increase in the mother's gestation period.
+
+**TEST 2: Testing The Linear Relationship Between Birth Weight and Gestation Period Among Mothers Who Smoked in The Past**
+```{r}
+cor_results<-cor.test(my_babies$wt[my_babies$sm==2], my_babies$gestation[my_babies$sm==2])
+cor_results
+```
+
+*Step 1: State the claim*
+Ho: There is no linear correlation between birth weight and gestation period for mothers who smoke now.
+
+Ha: There is a linear correlation between birth weight and gestation period for mothers who smoke now.
+
+*Step 2: Collect and summarize a sample*
+```{r}
+mean(my_babies$wt[my_babies$sm==2], na.rm =TRUE)
+sd(my_babies$wt[my_babies$sm==2], na.rm =TRUE)
+
+mean(my_babies$gestation[my_babies$sm==2], na.rm =TRUE)
+sd(my_babies$gestation[my_babies$sm==2], na.rm =TRUE)
+
+length(my_babies$sm[my_babies$sm ==2])
+```
+
+The observed data looks linear
+, the observations are independent (element of randomness)
+, distributions of X and Y are fairly symmetrical, no extreme outliers
+and the sample size is large (208)
+
+*Step 3: Assess the evidence*
+
+```{r}
+cor_results<-cor.test(my_babies$wt[my_babies$sm==2], my_babies$gestation[my_babies$sm==2])
+cor_results
+
+
+my.lm <- lm(my_babies$wt[my_babies$sm==2] ~ my_babies$gestation[my_babies$sm==2])
+
+summary(my.lm)
+```
+
+t-statistic = 7.3854 
+
+p-value     = 4.449e-12
+
+r           = 0.4694
+
+r_squared   = 0.2203
+
+slope       = 0.51237
+
+
+*Step 4: Make a conclusion*
+
+For pregnant mothers who used to smoke, there is an extremely strong evidence of a moderate positive linear relationship between the birth weight of their babies and their gestation period (r = 0.4694). The statistical evidence indicates that the gestation period of such a mother accounts for about 2% ( = 0.2203) of the variation in the birth weight of her child. Again, the slope of the regression suggests that, on average, the birth weight increases by 0.51237 for every increase in the mother's gestation period.
+
+
+
+
+
+**TEST 3: Testing The Linear Relationship Between Birth Weight and Gestation Period Among Mothers Who Smoke Now**
+
+*Step 1: State the claim*
+Ho: There is no linear correlation between birth weight and gestation period for mothers who smoke now.
+
+Ha: There is a linear correlation between birth weight and gestation period for mothers who smoke now.
+
+*Step 2: Collect and summarize a sample*
+```{r}
+mean(my_babies$wt[my_babies$sm==1], na.rm =TRUE)
+sd(my_babies$wt[my_babies$sm==1], na.rm =TRUE)
+
+mean(my_babies$gestation[my_babies$sm==1], na.rm =TRUE)
+sd(my_babies$gestation[my_babies$sm==1], na.rm =TRUE)
+
+length(my_babies$sm[my_babies$sm ==1])
+```
+
+The observed data looks linear
+, the observations are independent (element of randomness)
+, the distributions of X and Y are fairly symmetrical, no extreme outliers
+and the sample size is large (494)
+
+*Step 3: Assess the evidence*
+
+```{r}
+cor_results<-cor.test(my_babies$wt[my_babies$sm==1], my_babies$gestation[my_babies$sm==1])
+cor_results
+
+my.lm <- lm(my_babies$wt[my_babies$sm==1] ~ my_babies$gestation[my_babies$sm==1])
+
+summary(my.lm)
+```
+
+t-statistic = 12.416
+
+p-value     = 2.2e-16
+
+r           = 0.4938
+
+r_squared   = 0.2438
+
+slope       = 0.59495
+
+*Step 4: Make a conclusion*
+
+For pregnant mothers who currently smoke, there is an extremely strong evidence of a slightly strong positive linear relationship between the birth weight of their babies and their gestation period (r = 0.4938). The statistical evidence indicates that the gestation period of such a mother accounts for about 2% (r= 0.2438) of the variation in the birth weight of her child. Again, the slope of the regression suggests that, on average, the birth weight increases by 0.59495 for every increase in the mother's gestation period.
+
+
+**SUMMARY**
+
+The research revealed that there is indeed a correlation between gestation and birth weight among smoking an non smoking mothers. For instance, we found that for mothers who smoke, their gestation period accounted for about 2% of the variation in the birth weight of her child while that of a non smoking mother accounted for 4% ( = 0.443) of the variation in the birth weight of her child. From these figures, it is obvious that the gestation of mothers who do not smoke has more effect on birth weight than mothers who do.
+
+
+
+
+
+
+
+
